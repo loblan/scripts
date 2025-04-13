@@ -1,0 +1,3 @@
+#!/bin/bash
+
+whois $@ | grep -E 'CIDR:|route:' | tr -d [:blank:] | cut -d':' -f2

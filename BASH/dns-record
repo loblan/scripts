@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# Query all DNS record
+
+echo [+] DNS records for $1 >&2
+echo [*] Address records: >&2
+dig +noall +answer a $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] IPv6 address records: >&2
+dig +noall +answer aaaa $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Canonical Name records: >&2
+dig +noall +answer cname $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Mail exchange records: >&2
+dig +noall +answer mx $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Text records: >&2
+dig +noall +answer txt $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Name server records: >&2
+dig +noall +answer ns $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Start of authorithy records: >&2
+dig +noall +answer soa $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Service records: >&2
+dig +noall +answer srv $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Certification authority authorization records: >&2
+dig +noall +answer caa $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] DNS key records: >&2
+dig +noall +answer dnskey $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Delegation signer records: >&2
+dig +noall +answer ds $1 | tr [:blank:] ' ' | cut -d' ' -f1,5-
+echo [*] Zone transfer >&2
+dig +noall +answer AXFR $1

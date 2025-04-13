@@ -1,0 +1,74 @@
+#!/bin/bash
+
+# Query google search results using Google Custom Search API
+
+API_KEY=${GOOGLE_API_KEY}
+CX=${GOOGLE_CX}
+QUERY=''
+MAX_RESULTS=100
+DATE_RESTRICT=''
+RAW_OUTPUT=false
+
+usage() {
+    echo "Usage: $0 -k API_KEY -c CX -q QUERY [-m MAX_RESULTS]"
+    echo "  -k API_KEY        Your Google API key"
+    echo "  -c CX             Your Google Custom Search Engine ID"
+    echo "  -q QUERY          Search query"
+    echo "  -m MAX_RESULTS    Maximum results to fetch (default: 100)"
+    echo "  -d DATE_RESTRICT  Date restriction"
+    echo "  -r                Output raw JSON instead of parsing for URLs"
+    exit 1
+}
+
+while getopts 'k:c:q:m:d:r' OPTION; do
+    case "$OPTION" in
+        k)
+            API_KEY="$OPTARG"
+            ;;
+        c)
+            CX="$OPTARG"
+            ;;
+        q)
+            QUERY="$OPTARG"
+            ;;
+        m)
+            MAX_RESULTS="$OPTARG"
+            ;;
+	d)
+            DATE_RESTRICT="$OPTARG"
+            ;;
+	r)
+	    RAW_OUTPUT=true
+	    ;;
+        ?)
+            usage
+            ;;
+    esac
+done
+
+if [[ -z "$API_KEY" || -z "$CX" || -z "$QUERY" ]]; then
+    echo "All options -k (API key), -c (CX), and -q (query) must be provided."
+    usage
+fi
+
+# urlencode Query
+QUERY=$(python3 -c "import urllib.parse; print(urllib.parse.quote('$QUERY', safe=''))")
+
+# fetch results
+for ((i=1; i<=MAX_RESULTS; i+=10)); do
+    URL="https://www.googleapis.com/customsearch/v1?key=${API_KEY}&cx=${CX}&q=${QUERY}&start=${i}"
+    if [[ ! -z "$DATE_RESTRICT" ]]; then
+        URL+="&dateRestrict=${DATE_RESTRICT}"
+    fi
+    RESPONSE=$(curl -s "${URL}")
+    if $RAW_OUTPUT; then
+        echo "$RESPONSE"
+    else
+        echo "${RESPONSE}" | jq -r '.items[] | .link'
+    fi
+    if ! echo "${RESPONSE}" | jq -e '.items' > /dev/null; then
+        # echo "No more results or an error occurred."
+        break
+    fi
+done
+

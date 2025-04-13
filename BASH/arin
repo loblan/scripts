@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Raw query to ARIN whois server
+
+echo $@ | nc whois.arin.net 43

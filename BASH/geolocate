@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Open google map to IP geo location using IPinfo data
+
+xdg-open "https://www.google.com/maps?ll=$(./ipinfo $1 | jq -r .loc)&z=10"

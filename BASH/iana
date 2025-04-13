@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Raw query to IANA whois server
+
+echo $@ | nc whois.iana.org 43

@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Simple wrapper for ipinfo
+
+curl -s https://ipinfo.io/$@
